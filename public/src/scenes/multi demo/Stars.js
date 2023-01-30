@@ -22,6 +22,12 @@ class Stars extends Phaser.Scene {
 
     create ()
     {
+        this.input.on('pointerup', function (pointer) {
+            console.log('Star pointerup...');
+            // this.add.image(pointer.worldX, pointer.worldY, 'start').setScale(0.1);
+            // pointer.event.stopPropagation();
+        }, this);
+
         this.cameras.main.setViewport(this.parent.x, this.parent.y, Stars.WIDTH, Stars.HEIGHT);
         this.cameras.main.setBackgroundColor(0x000000);
 
@@ -42,6 +48,8 @@ class Stars extends Phaser.Scene {
         }
 
         const bg = this.add.image(0, 0, 'starsWindow').setOrigin(0);
+
+        this.text = this.add.text(10, 20, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
     }
 
     update (time, delta)
@@ -66,6 +74,19 @@ class Stars extends Phaser.Scene {
             list[i].y = y;
             list[i].a = (x < 0 || x > 320 || y < 20 || y > 260) ? 0 : 1;
         }
+
+        this.text.setText([
+            'screen x: ' + this.input.x,
+            'screen y: ' + this.input.y,
+            'world x: ' + this.input.mousePointer.worldX,
+            'world y: ' + this.input.mousePointer.worldY,
+            'cam mid x:' + this.cameras.main.midPoint.x,
+            'cam mid y:' + this.cameras.main.midPoint.y,
+
+        ]);
+
+       
+
     }
 
     refresh ()
@@ -74,7 +95,6 @@ class Stars extends Phaser.Scene {
 
         this.scene.bringToTop();
     }
-
 }
 
 Stars.WIDTH = 328;

@@ -1,23 +1,45 @@
+class Widget extends Phaser.GameObjects.Zone {
+    constructor(scene, x, y, width, height) {
+      super(scene, x, y, width, height);
+      scene.add.existing(this);
+    }
+
+    setTint(color)
+    {
+        console.log(color);
+    }
+}
+  
+
 class Controller extends Phaser.Scene {
 
-    constructor ()
-    {
+    constructor() {
         super();
 
         this.count = 0;
 
         this.workbench;
         this.workbenchTitle;
-        this.workbenchIcons;
+        // this.workbenchIcons;
+        this.map;
+
+        this.player;
+        this.cursors;
+        this.text;
     }
 
-    preload ()
-    {
-        this.load.image('disk', 'assets/phaser3/disk.png');
+    preload() {
+        /* Awen */
+        this.load.image('cad', 'assets/phaser3/cad.png');
+        this.load.image('start', 'assets/input/s.png');
+        this.load.image('end', 'assets/input/e.png');
+        this.load.image('block', 'assets/sprites/block.png');
 
+
+        // this.load.image('disk', 'assets/phaser3/disk.png');
         this.load.image('workbenchTitle', 'assets/phaser3/workbench-title.png');
-        this.load.image('workbenchIcons', 'assets/phaser3/workbench-icons.png');
-        this.load.image('demosWindow', 'assets/phaser3/demos-window.png');
+        // this.load.image('workbenchIcons', 'assets/phaser3/workbench-icons.png');
+        this.load.image('toolbar', 'assets/phaser3/toolbar.png');
         this.load.image('eyesIcon', 'assets/phaser3/eyes-icon.png');
         this.load.image('starsIcon', 'assets/phaser3/stars-icon.png');
         this.load.image('jugglerIcon', 'assets/phaser3/juggler-icon.png');
@@ -25,7 +47,6 @@ class Controller extends Phaser.Scene {
         this.load.image('invadersIcon', 'assets/phaser3/invaders-icon.png');
         this.load.image('clockIcon', 'assets/phaser3/clock-icon.png');
         this.load.image('boingIcon', 'assets/phaser3/boing-icon.png');
-
         this.load.image('starsWindow', 'assets/phaser3/stars-window.png');
         this.load.image('sineWindow', 'assets/phaser3/sinewave-window.png');
         this.load.image('eyesWindow', 'assets/phaser3/eyes-window.png');
@@ -50,8 +71,7 @@ class Controller extends Phaser.Scene {
         this.load.image('invaders.ship', 'assets/games/multi/ship.png');
     }
 
-    create ()
-    {
+    create() {
         //  Create animations
 
         this.anims.create({
@@ -96,122 +116,221 @@ class Controller extends Phaser.Scene {
             repeat: -1
         });
 
-        this.workbench = this.add.graphics({ x: 16, y: 21 });
+        
+        this.map = this.add.image(0, 0, 'cad').setOrigin(0);
+        this.map.alpha = 0.5;
+        this.cameras.main.setBounds(0, 0, this.map.width, this.map.height);
+        this.physics.world.setBounds(0, 0, this.map.width, this.map.height);
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.player = this.physics.add.image(4000, 1500, 'block').setInteractive();
+        this.player.setCollideWorldBounds(true);
+        this.player.setVisible(false);
+        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+        
+        this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+        const toolbar = this.add.image(0, 0, 'toolbar').setOrigin(0).setScrollFactor(0);
+        const eyesIcon = this.add.zone(0, 0, 120, 98).setOrigin(0).setName('btn1').setScrollFactor(0).setInteractive();
+        const clockIcon = this.add.zone(120, 0, 100, 98).setOrigin(0).setName('btn2').setScrollFactor(0).setInteractive();
+        const jugglerIcon = this.add.zone(220, 0, 100, 98).setOrigin(0).setName('btn3').setScrollFactor(0).setInteractive();
+        const starsIcon = this.add.zone(0, 320, 0, 98).setOrigin(0).setName('btn4').setScrollFactor(0).setInteractive();
+        const invadersIcon = this.add.zone(420, 0, 100, 98).setOrigin(0).setName('btn5').setScrollFactor(0).setInteractive();
+        const boingIcon = this.add.zone(520, 0, 100, 98).setOrigin(0).setName('btn6').setScrollFactor(0).setInteractive();
 
-        this.workbench.fillStyle(0xffffff);
-        this.workbench.fillRect(0, 0, this.sys.game.config.width - 105, 20);
-
-        this.workbenchTitle = this.add.image(16, 21, 'workbenchTitle').setOrigin(0);
-        this.workbenchIcons = this.add.image(this.sys.game.config.width - 87, 21, 'workbenchIcons').setOrigin(0);
-
-        const disk = this.add.image(16, 64, 'disk').setOrigin(0).setInteractive();
-
-        const demosWindow = this.add.image(0, 0, 'demosWindow').setOrigin(0);
-        const eyesIcon = this.add.image(32, 34, 'eyesIcon', 0).setOrigin(0).setInteractive();
-        const jugglerIcon = this.add.image(48, 110, 'jugglerIcon', 0).setOrigin(0).setInteractive();
-        const starsIcon = this.add.image(230, 40, 'starsIcon', 0).setOrigin(0).setInteractive();
-        const invadersIcon = this.add.image(120, 34, 'invadersIcon', 0).setOrigin(0).setInteractive();
-        const clockIcon = this.add.image(240, 120, 'clockIcon', 0).setOrigin(0).setInteractive();
-        const boingIcon = this.add.image(146, 128, 'boingIcon', 0).setOrigin(0).setInteractive();
-
-        const demosContainer = this.add.container(32, 70, [ demosWindow, eyesIcon, jugglerIcon, starsIcon, invadersIcon, clockIcon, boingIcon ]);
-
-        demosContainer.setVisible(false);
-
-        demosContainer.setInteractive(new Phaser.Geom.Rectangle(0, 0, demosWindow.width, demosWindow.height), Phaser.Geom.Rectangle.Contains);
-
+        const demosContainer = this.add.container(100, 400, [ toolbar, eyesIcon, jugglerIcon, starsIcon, invadersIcon, clockIcon, boingIcon]);
+        demosContainer.setVisible(true);
+        demosContainer.setInteractive(new Phaser.Geom.Rectangle(0, 0, toolbar.width, toolbar.height), Phaser.Geom.Rectangle.Contains);
+        demosContainer.setName('toolbarcontainer');
+        demosContainer.setScrollFactor(0);
         this.input.setDraggable(demosContainer);
 
         demosContainer.on('drag', function (pointer, dragX, dragY) {
-
             this.x = dragX;
             this.y = dragY;
-
         });
-
-        disk.once('pointerup', function () {
-
-            demosContainer.setVisible(true);
-
-        });
-
-        eyesIcon.on('pointerup', function () {
-
-            this.createWindow(Eyes);
-
+        this.input.on('pointerup', function (pointer) {
+            console.log('controller pointerup...');
+            var pt = this.add.image(pointer.worldX, pointer.worldY, 'start').setScale(0.1).setInteractive();
+            pt.on('pointerup', pointer=>{
+                pointer.event.stopPropagation();
+                pt.destroy();
+            });
         }, this);
-
-        jugglerIcon.on('pointerup', function () {
-
-            this.createWindow(Juggler);
-
+        this.input.on('gameobjectup', function (pointer, gameObject, event)
+        {
+            console.log('Controller Scene: gameobjectup...', gameObject);
+            if (gameObject) {
+                switch(gameObject.name) {
+                    case 'btn1':
+                        // cover minimap to receive events，0.06 大概是16倍，原始地图是5243x3664
+                        this.createWindow(Clock, 1500, 600, 318, 222, true);
+                        break;
+                    case 'btn2':
+                        this.createWindow(Stars);
+                        break;
+                    case 'btn3':
+                        break;
+                    case 'btn4':
+                        break;     
+                    case 'btn5':
+                        break;
+                    case 'btn6':
+                        break;                     
+                    default:
+                        break;
+                }
+            }
+            event.stopPropagation();
         }, this);
+        // eyesIcon.on('pointerup', function () {
+        //     this.createWindow(Eyes);
+        // }, this);
 
-        starsIcon.on('pointerup', function () {
+        // jugglerIcon.on('pointerup', function () {
+        //     if(this.getData('toggle')){
+        //         this.setData({'toggle': false});
+        //         this.setTint(0x0000ff);
+        //     } else {
+        //         this.setData({'toggle': true});
+        //         this.setTint(0x00ff00);
+        //     }
+        // });
 
-            this.createWindow(Stars);
+        // starsIcon.on('pointerup', function () {
 
-        }, this);
+        //     this.createWindow(Stars);
 
-        invadersIcon.on('pointerup', function () {
+        // }, this);
 
-            this.createWindow(Invaders);
+        // invadersIcon.on('pointerup', function () {
 
-        }, this);
+        //     this.createWindow(Invaders);
 
-        clockIcon.on('pointerup', function () {
+        // }, this);
 
-            this.createWindow(Clock);
+        // clockIcon.on('pointerup', function () {
+        //     // cover minimap to receive events，0.06 大概是16倍，原始地图是5243x3664
+        //     this.createWindow(Clock, 1500, 600, 318, 222, true);
 
-        }, this);
+        // }, this);
 
-        boingIcon.on('pointerup', function () {
+        // boingIcon.on('pointerup', function () {
 
-            this.createWindow(Boing);
+        //     this.createWindow(Boing);
 
-        }, this);
+        // }, this);
 
 
-        this.events.on('resize', this.resize, this);
+        // 0.06 大概是16倍，原始地图是5243x3664
+        this.minimap = this.cameras.add(1500, 600, 318, 222).setZoom(0.06).setName('mini');
+        this.minimap.setBackgroundColor('rgba(0,0,0,0.5)');
+        this.minimap.scrollX = 2464;
+        this.minimap.scrollY = 1720;
+        this.minimap.ignore([demosContainer, this.text]);
     }
 
-    createWindow (func)
-    {
+
+    update() {
+        this.player.setVelocity(0);
+
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-2000);
+        }
+        else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(2000);
+        }
+
+        if (this.cursors.up.isDown) {
+            this.player.setVelocityY(-2000);
+        }
+        else if (this.cursors.down.isDown) {
+            this.player.setVelocityY(2000);
+        }
+        else if (this.cursors.space.isDown) {
+            this.cameras.main.zoomTo(0.5, 500);
+        }
+        else if (this.cursors.shift.isDown) {
+            this.cameras.main.zoomTo(1, 500);
+        }
+
+        let cam = this.cameras.main;
+        if (cam.deadzone)
+        {
+            this.text.setText([
+                'ScrollX: ' + cam.scrollX,
+                'ScrollY: ' + cam.scrollY,
+                'MidX: ' + cam.midPoint.x,
+                'MidY: ' + cam.midPoint.y,
+                'deadzone left: ' + cam.deadzone.left,
+                'deadzone right: ' + cam.deadzone.right,
+                'deadzone top: ' + cam.deadzone.top,
+                'deadzone bottom: ' + cam.deadzone.bottom
+            ]);
+        }
+        else
+        {
+            this.text.setText([
+                'ScrollX: ' + cam.scrollX,
+                'ScrollY: ' + cam.scrollY,
+                'MidX: ' + cam.midPoint.x,
+                'MidY: ' + cam.midPoint.y
+            ]);
+        }
+    }
+
+    createWindow(func,  xx, yy, ww, hh, fix) {
         const x = Phaser.Math.Between(400, 600);
         const y = Phaser.Math.Between(64, 128);
 
         const handle = 'window' + this.count++;
 
-        const win = this.add.zone(x, y, func.WIDTH, func.HEIGHT).setInteractive().setOrigin(0);
+        // const win = this.add.zone(x, y, func.WIDTH, func.HEIGHT).setInteractive().setOrigin(0);
+        let win;
+        if(xx && yy && ww && hh)
+            win = new Widget(this, xx, yy, ww, hh).setScrollFactor(0).setInteractive().setOrigin(0);
+        else
+            win = new Widget(this, x, y, func.WIDTH, func.HEIGHT).setScrollFactor(0).setInteractive().setOrigin(0);
 
         const demo = new func(handle, win);
+        if(fix)
+            console.log('fix') 
+        else {
+            this.input.setDraggable(win);
+            win.on('drag', function (pointer, dragX, dragY) {
 
-        this.input.setDraggable(win);
+                this.x = dragX;
+                this.y = dragY;
 
-        win.on('drag', function (pointer, dragX, dragY) {
+                demo.refresh();
+                pointer.event.stopPropagation();
 
-            this.x = dragX;
-            this.y = dragY;
+            });
+        }
 
-            demo.refresh()
-
-        });
+        win.on('pointerup', (pointer, localX, localY) => {
+            // bring to top.
+            demo.refresh();
+            if (localX < 20 && localY < 20) {
+                this.scene.remove(handle);
+                
+                win.destroy();
+            };
+            pointer.event.stopPropagation();
+        }, this)
 
         this.scene.add(handle, demo, true);
     }
 
-    resize (width, height)
-    {
+    resize(width, height) {
         if (width === undefined) { width = this.game.config.width; }
         if (height === undefined) { height = this.game.config.height; }
 
         this.cameras.resize(width, height);
 
-        this.workbench.clear();
-        this.workbench.fillStyle(0xffffff);
-        this.workbench.fillRect(0, 0, width - 105, 20);
+        // this.workbench.clear();
+        // this.workbench.fillStyle(0xffffff);
+        // this.workbench.fillRect(0, 0, width - 105, 20);
 
-        this.workbenchIcons.x = (width - 87);
+        // this.workbenchIcons.x = (width - 87);
     }
 
 }
