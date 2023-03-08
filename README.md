@@ -1,31 +1,37 @@
-# Phaser 3 Examples
+# 二维可视化动画例程库
 
-All of the code in this repo can be browsed at [https://labs.phaser.io](https://labs.phaser.io). The labs site is a mirror of this repo and changes made in the repo are synced to the site within minutes.
+所有代码改编自[Phaser3](https://labs.phaser.io)。
 
-You can also clone this repo to have the code locally for testing, which can be really useful while developing with Phaser 3.
+## 快速开始
 
-## Dev Version vs. Release Version
+### 需要环境
 
-By default the examples site is configured to serve the latest dev version of Phaser 3. We are continuously working on it, which means new builds are pushed often several times per day. Use the drop-down menu below the example to run it against any previous release version. You should see the URL change to reflect the version within it.
+```
+下载并安装nodeJs 14.21.3。
+```
 
-### Requirements
+### 安装和运行
 
-If you want to run our scripts then you need [Node.js](https://nodejs.org)  installed.
+按如下命令下载源码并安装运行:
 
-To show the example browser run these commands in your terminal:
+```
+git clone https://github.com/lvyv/phaser3-examples.git
+npm install
+npm run start
+```
 
-| Command | Description |
+### 客户端访问
+http://127.0.0.1:8080/
+
+示例说明
+
+| 示例 | 描述 |
 |---------|-------------|
-| `npm install` | Install dependencies and launch browser with examples.|
-| `npm start` | Launch browser to show the examples. <br> Press `Ctrl + c` to kill **http-server** process. |
-| `npm run update` | To build a new `examples.json` file if you add a new example. |
+| [MAPF可视化](http://127.0.0.1:8080/edit.html?src=src\tilemap\grid%20movement.js) | 用于对PIBT算法求出的可行解进行动画绘制。<br/>地图是PIBT提供的pibt2\map\arena.map文件修改而来。|
 
-Alternatively, if you have your own local web server installed, you could configure it to serve the `/public` folder from the repo and you will get access to the examples interface.
+地图格式说明：PIBT算法提供的地图是“T”和“.”符号的图块地图，T表障碍，.表示空白。在前端为了支持可视化绘制，图元（文件位置在assets/tilemaps/tiles/drawtiles-spaced.png）为0，1，2三个图块，所以对应的地图文件csv，用“2”替换“T”，用“0”或“1”替换“.”，并且每行中各字符之间用“,”分割。
 
-### License
 
-The source code in this repo is released under the MIT license.
+### 许可协议
 
-The assets are not.
-
-Lots of the assets in this repo come from old classic arcade / computer games or open and stock art sites. As such, you cannot use them in your own commercial games, or for any games that carry advertising.
+本仓库代码按 MIT 许可协议发行。
