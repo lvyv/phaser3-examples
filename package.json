@@ -4,7 +4,7 @@
   "description": "Phaser 3 Examples",
   "main": "index.js",
   "scripts": {
-    "start": ".\\node_modules\\.bin\\http-server -s -o",
+    "start": ".\\node_modules\\.bin\\http-server -s -o edit.html?src=src%5Ctilemap%5Cgrid%20movement.js",
     "update": "node ./build.js",
     "screenshots": "node ./generate-screenshots.js",
     "test": "echo \"Error: no test specified\" && exit 1"
